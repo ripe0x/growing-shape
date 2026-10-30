@@ -40,7 +40,7 @@ cast rpc anvil_setBalance "$FWA_HOLDER" 0x8AC7230489E80000 --rpc-url "$RPC" >/de
 cast send --unlocked --from "$FWA_HOLDER" "$FWA_TOKEN" "transfer(address,uint256)" "$GAME" "$FEE" --rpc-url "$RPC" >/dev/null
 
 forge script script/Deploy.s.sol:Launch --rpc-url "$RPC" --unlocked --sender "$DEPLOYER" --broadcast --slow -q
-forge script script/Deploy.s.sol:Postflight --rpc-url "$RPC" 2>&1 | grep -E "postflight|pool|wei|Error|revert" || true
+forge script script/Deploy.s.sol:Postflight --rpc-url "$RPC" 2>&1 | grep -E "postflight|residual|pool|wei|Error|revert" || true
 cast send --unlocked --from "$DEPLOYER" "$GAME" "setPaused(bool)" false --rpc-url "$RPC" >/dev/null
 echo "GrowingShape $GAME"
 echo "pool $(cast call "$GAME" "pool()(address)" --rpc-url "$RPC")"

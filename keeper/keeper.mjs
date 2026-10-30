@@ -4,7 +4,8 @@
 //
 // Env: RPC_URL, GAME, KEEPER_PRIVATE_KEY (read from the environment only; never logged or written), or
 // KEEPER_UNLOCKED=<address> on a chain-31337 fork. Optional: INTERVAL_MS (15000), MAX_GAS_PRICE_GWEI (50),
-// KEEPER_ALTRUISTIC (0), DRY_RUN (0), BOOK_BATCH (50), ONCE (0).
+// KEEPER_ALTRUISTIC (0), DRY_RUN (0), BOOK_BATCH (50), ONCE (0), FROM_BLOCK (game deployment block;
+// bounds log scans), LOOKBACK_BLOCKS (50400).
 import { readFileSync } from 'node:fs';
 import { createPublicClient, createWalletClient, http, formatEther, formatGwei, parseGwei } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -13,7 +14,10 @@ import { dueJobs, expectedReward, ACQ, VRF_STORED } from './lib.mjs';
 
 const env = process.env;
 const RPC = env.RPC_URL ?? 'https://mainnet.gateway.tenderly.co';
-const GAME = env.GAME ?? JSON.parse(readFileSync(new URL('../deployments/31337.json', import.meta.url))).growingShape;
+const DEPLOYMENT = env.GAME ? null : JSON.parse(readFileSync(new URL('../deployments/31337.json', import.meta.url)));
+const GAME = env.GAME ?? DEPLOYMENT.growingShape;
+// Log scans never reach before the game existed (on a fork, older ranges are forwarded to the remote RPC).
+const FROM_BLOCK = BigInt(env.FROM_BLOCK ?? DEPLOYMENT?.deployBlock ?? 0);
 const INTERVAL = Number(env.INTERVAL_MS ?? 15_000);
 const MAX_GAS_PRICE = parseGwei(env.MAX_GAS_PRICE_GWEI ?? '50');
 const ALTRUISTIC = env.KEEPER_ALTRUISTIC === '1';
@@ -66,7 +70,8 @@ async function readState() {
   // retryable. Anyone may retry within FWA's 7-day window; this completes the player's delivery.
   const failedDeliveries = [];
   const head2 = await pub.getBlockNumber();
-  const fromBlock = head2 > LOOKBACK ? head2 - LOOKBACK : 0n;
+  let fromBlock = head2 > LOOKBACK ? head2 - LOOKBACK : 0n;
+  if (fromBlock < FROM_BLOCK) fromBlock = FROM_BLOCK;
   const failed = await pub.getContractEvents({ address: pool, abi: poolAbi, eventName: 'NFTDeliveryFailed', fromBlock, toBlock: head2 });
   for (const log of failed) {
     const listingId = log.args.listingId;

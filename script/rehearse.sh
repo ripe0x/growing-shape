@@ -10,7 +10,7 @@ export GS_DEPLOYMENT_FILE=deployments/rehearsal-$PORT.json
 mkdir -p rehearsal
 PORT=$PORT BLOCK_TIME=${BLOCK_TIME:-1} ./script/local.sh | tee rehearsal/launch.log
 GAME=$(jq -r .growingShape "$GS_DEPLOYMENT_FILE")
-export RPC_URL=$RPC GAME
+export RPC_URL=$RPC GAME FROM_BLOCK=$(jq -r .deployBlock "$GS_DEPLOYMENT_FILE")
 node keeper/dev-vrf.mjs >rehearsal/vrf.log 2>&1 &
 VRF=$!
 KEEPER_UNLOCKED=0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC INTERVAL_MS=${INTERVAL_MS:-4000} node keeper/keeper.mjs >rehearsal/keeper.log 2>&1 &
