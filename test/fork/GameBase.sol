@@ -18,6 +18,12 @@ abstract contract GameBase is ForkBase {
 
     function setUp() public virtual override {
         super.setUp();
+        // Well-known test addresses carry mainnet code (EIP-7702 sweepers forward any ETH they receive).
+        // Clear it so balances in assertions are the actors' own.
+        address[5] memory actors = [owner, residual, keeperBot, alice, address(this)];
+        for (uint256 i; i < actors.length; ++i) {
+            if (actors[i].code.length != 0 && actors[i] != address(this)) vm.etch(actors[i], "");
+        }
         game = _deploy(_gameParams(), Params.tiers());
         _launch(game, Params.CAPITAL);
         pool = game.pool();
