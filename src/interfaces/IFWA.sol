@@ -112,6 +112,7 @@ interface IFWAClone {
             AcquisitionStatus status
         );
     function requestIdAtSequence(uint64 sequence) external view returns (uint256);
+    function slotToListing(uint256 slot) external view returns (uint256);
     function nextSequenceToProcess() external view returns (uint64);
     function lastIssuedSequence() external view returns (uint64);
     function unsettledAcquisitionCount() external view returns (uint256);

@@ -8,6 +8,8 @@ interface IShapePacks {
     ///      backing plus one Shapes mint fee per Shape. Reverts below `MIN_PACK_VALUE` (0.03 ETH live).
     function createPack(uint256[] calldata shapeIds, uint32[] calldata mintCounts) external payable returns (uint256);
     function valueOf(uint256 packId) external view returns (uint256);
+    /// @dev Burns the pack; Shapes pays its backing to the caller.
+    function redeem(uint256 packId) external;
     function MIN_PACK_VALUE() external view returns (uint256);
     function ownerOf(uint256 tokenId) external view returns (address);
     function setApprovalForAll(address operator, bool approved) external;

@@ -6,6 +6,7 @@ pragma solidity 0.8.30;
 interface IShapes {
     function mintBatch(uint256 amountWei, uint256 quantity) external payable returns (uint256 firstTokenId);
     function compose(uint256 survivorId, uint256[] calldata burnIds) external returns (uint256);
+    function redeem(uint256 tokenId) external;
     function mintFee() external view returns (uint256);
     function backingOf(uint256 tokenId) external view returns (uint256);
     function seedOf(uint256 tokenId) external view returns (bytes32);
