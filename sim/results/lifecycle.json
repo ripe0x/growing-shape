@@ -1,0 +1,25 @@
+{
+  "frac_won_within_horizon": 0.896,
+  "median_first_win_draw": 1615.5,
+  "won_before_first_comp": 0.09025,
+  "E_backing_winning_featured": 2.9510323660714284,
+  "win_backing_distribution": {
+    "0.5": 0.1007,
+    "1.0": 0.5834,
+    "5.0": 0.1682,
+    "10.0": 0.1476
+  },
+  "cycles_won_mean": 2.251,
+  "keeper_net_per_draw": -6.234743309052624e-05,
+  "keeper_starved_frac": 0.9997109166666667,
+  "P_reach_1.0_before_won": 0.90975,
+  "median_draws_to_1.0": 206.0,
+  "P_reach_5.0_before_won": 0.387,
+  "median_draws_to_5.0": 1920.0,
+  "P_reach_10.0_before_won": 0.23625,
+  "median_draws_to_10.0": 4111.0,
+  "P_reach_50.0_before_won": 0.0,
+  "median_draws_to_50.0": null,
+  "P_reach_100.0_before_won": 0.0,
+  "median_draws_to_100.0": null
+}

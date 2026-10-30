@@ -334,7 +334,7 @@ contract GrowingShape is ReentrancyGuardTransient, IPurchaseOperator {
 
     function _setKeeperParams(KeeperParams memory k) internal {
         if (
-            k.perDraw > 0.001 ether || k.budgetCap > 0.5 ether || k.flatReward > 0.002 ether || k.flatInterval < 60
+            k.perDraw > 0.005 ether || k.budgetCap > 0.5 ether || k.flatReward > 0.002 ether || k.flatInterval < 60
                 || k.gasOverhead > 100_000 || k.gasPriceCap > 200 gwei || k.priorityCap > 10 gwei
         ) revert BadParams();
         keeper = k;

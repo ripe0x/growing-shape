@@ -115,7 +115,7 @@ contract AdversarialForkTest is GameBase {
         for (uint256 i; i < bad.length; ++i) {
             bad[i] = Params.keeper();
         }
-        bad[0].perDraw = 0.001 ether + 1;
+        bad[0].perDraw = 0.005 ether + 1;
         bad[1].budgetCap = 0.5 ether + 1;
         bad[2].flatReward = 0.002 ether + 1;
         bad[3].flatInterval = 59;
@@ -155,7 +155,7 @@ contract AdversarialForkTest is GameBase {
         gp.resetShareBps = 2_000;
         gp.reserveTarget = 0;
         GrowingShape.KeeperParams memory kp = GrowingShape.KeeperParams({
-            perDraw: 0.001 ether,
+            perDraw: 0.005 ether,
             budgetCap: 0.5 ether,
             flatReward: 0.002 ether,
             flatInterval: 60,

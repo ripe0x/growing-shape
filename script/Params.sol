@@ -25,8 +25,8 @@ library Params {
 
     function keeper() internal pure returns (GrowingShape.KeeperParams memory) {
         return GrowingShape.KeeperParams({
-            perDraw: 0.0001 ether,
-            budgetCap: 0.05 ether,
+            perDraw: 0.001 ether,
+            budgetCap: 0.1 ether,
             flatReward: 0.0002 ether,
             flatInterval: 600,
             gasOverhead: 30_000,

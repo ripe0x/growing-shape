@@ -125,7 +125,7 @@ ETH; nothing for calls that did no work. `keeperBudget` accrues `perDraw` per de
 
 One owner (two-step transfer) may, within hard bounds: set game parameters (markup 1.0–2.0×, start
 notional 50–100%, floor 5–100%, reset share 20–100%, reprice step 1–50%, decay ≤ 5,000 ppm per draw,
-pending cap 1–100, seed 0.1/0.5/1 ETH, reserve ≤ 20 ETH), keeper parameters (≤ 0.001 ETH per draw,
+pending cap 1–100, seed 0.1/0.5/1 ETH, reserve ≤ 20 ETH), keeper parameters (≤ 0.005 ETH per draw,
 ≤ 0.5 ETH cap, ≤ 0.002 ETH flat reward, interval ≥ 60 s, ≤ 200 gwei price cap, ≤ 10 gwei priority cap),
 add tiers and change targets, pause purchases, pause compositions, open the pool once, and retire. No
 owner path moves ETH or NFTs to anyone. Featured parameters apply from the next reset.
