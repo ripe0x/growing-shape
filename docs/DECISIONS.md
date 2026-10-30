@@ -105,3 +105,9 @@ prerequisite and an external purchase this project has not made.
 `maxPendingDraws` bounds how far play can run ahead of accounting; `minLiveOrdinary` keeps the worst-case
 board deep enough that FWA settlement-time fee drift stays inside its ±10% tolerance. Both pause purchases
 rather than risk refunds or an unaccounted board.
+
+## D19. Featured listing activation
+When FWA is idle, `_listFeatured` drains the staging queue right after listing so a new or composed
+featured Shape is drawable immediately. When busy (a cycle restart during play), it joins the draw through
+the next requests' reserved batches. Alternative: refuse `startCycle` unless idle; rejected because it
+would delay restarts under steady play.

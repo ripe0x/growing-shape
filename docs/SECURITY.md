@@ -60,4 +60,8 @@ redemption (recovered failed deliveries). No function takes a destination addres
 - Forced ETH (selfdestruct) becomes operating capital; it cannot become surplus.
 - A future gas-schedule change could make FWA's 150k-gas delivery stipend fail for Shapes transfers;
   deliveries would then go through FWA's retry and refund paths (D13).
+- Anyone can call FWA's `processAcquisitions` with a gas-starved transaction so a winner's NFT delivery
+  fails and enters FWA's retry window (see AUDIT_SCOPE). Recovery is permissionless; the keeper retries.
+- Replacements listed while a request is unsettled are staged and briefly not drawable but are counted in
+  `liveOrdinary` (R4).
 - Internal review only. No independent audit has been performed.

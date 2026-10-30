@@ -103,6 +103,9 @@ contract Postflight is Script {
         require(game.operating() >= game.requiredLiquid() - game.replacementDue(), "reserve below target");
         require(game.surplus() == 0 && game.growthFund() == 0 && game.revenue() == 0, "fresh ledger");
         console2.log("postflight ok; paused =", game.paused());
+        // Owner decision D2: if these match, retire + finalize returns unneeded working capital to the owner.
+        console2.log("residual recipient", game.RESIDUAL_RECIPIENT());
+        console2.log("residual recipient is the owner:", game.RESIDUAL_RECIPIENT() == game.owner());
         console2.log("pool", address(pool));
         console2.log("operating wei", game.operating());
         console2.log("inventory cost wei", game.inventoryCost());
