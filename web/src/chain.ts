@@ -117,12 +117,19 @@ export async function readGame(): Promise<GameState> {
     weight: featuredWeight,
   };
 
+  // Every active listing is the game's, so FWA's totalWeight minus the featured weight is the active
+  // ordinary weight. Tier weights also include staged listings (not yet drawable), so when they exceed it,
+  // scale each tier's share to the active total: tiers + featured then sum to exactly 100%, approximately
+  // per tier because which tier the staged listings belong to is not tracked.
+  const ordinaryWeight = tierRaws.reduce((a, t) => a + t.weight, 0n);
+  const activeOrdinary = totalWeight - featuredWeight;
   const tiers: Tier[] = tierRaws.map((t, i) => ({
     index: i, backing: t.backing, packShapes: t.packShapes, target: t.target, live: t.live, weight: t.weight,
-    isPack: t.packShapes > 0, chance: ratio(t.weight, totalWeight),
+    isPack: t.packShapes > 0,
+    chance: ordinaryWeight === 0n ? 0 : ratio(t.weight, ordinaryWeight) * ratio(activeOrdinary, totalWeight),
   }));
 
-  const sumWeight = tiers.reduce((a, t) => a + t.weight, 0n) + featuredWeight;
+  const sumWeight = ordinaryWeight + featuredWeight;
   return {
     pool, shapes, packs,
     paused, retired: retiredAt > 0n,

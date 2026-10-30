@@ -92,7 +92,12 @@ export async function sendDraw(
   }
 
   const receipt = await pub.waitForTransactionReceipt({ hash });
-  if (receipt.status !== "success") throw new DrawError("The draw transaction reverted on-chain.");
+  // Simulation passed, so a revert here means the pool changed between simulation and inclusion (other
+  // draws filled FWA's request limit, restocked the board, or closed the game's gate). The payment was
+  // returned with the revert; only gas was spent.
+  if (receipt.status !== "success") {
+    throw new DrawError("The pool changed before your draw was included, so it reverted. Your ETH was not taken (only gas). Try again.", true);
+  }
 
   const requestIds: bigint[] = [];
   for (const log of receipt.logs) {
