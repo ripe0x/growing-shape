@@ -405,11 +405,15 @@ contract GrowingShape is ReentrancyGuardTransient, IPurchaseOperator {
         emit Funded(msg.sender, msg.value);
     }
 
-    /// @notice Book up to `maxCount` processed FWA acquisitions in sequence order, collect owner proceeds,
-    ///         and move eligible surplus into the growth fund.
+    /// @notice Settle up to `maxCount` FWA acquisitions whose randomness arrived or expired, book up to
+    ///         `maxCount` processed ones in sequence order, collect owner proceeds, and move eligible surplus
+    ///         into the growth fund.
+    /// @dev FWA's VRF callback usually settles its own request; `processAcquisitions` covers the rest
+    ///      (expiries, reserved batches, a failed fast path) and is a no-op otherwise.
     function book(uint256 maxCount) external nonReentrant hasPool {
         uint256 g = gasleft();
         IFWAClone p = pool;
+        uint256 settled = p.processAcquisitions(maxCount);
         uint64 from = bookedSequence;
         uint64 processed = p.nextSequenceToProcess() - 1;
         uint64 to = processed - from > maxCount ? from + uint64(maxCount) : processed;
@@ -430,7 +434,7 @@ contract GrowingShape is ReentrancyGuardTransient, IPurchaseOperator {
         if (to != from) emit Booked(from + 1, to);
         bool collected = _collect();
         _allocateGrowth();
-        _payKeeper(g, to != from || collected);
+        _payKeeper(g, settled != 0 || to != from || collected);
     }
 
     /// @notice Mint and list up to `maxCount` missing ordinary prizes in tier order, as operating ETH allows.

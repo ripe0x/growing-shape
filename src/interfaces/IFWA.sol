@@ -49,6 +49,54 @@ interface IFWAClone {
         uint256 price;
     }
 
+    // Events the keeper and web app read (verbatim from the verified clone source).
+    event NFTListed(
+        uint256 indexed listingId,
+        uint256 indexed slot,
+        address indexed depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 weight,
+        uint256 price
+    );
+    event ListingWithdrawn(uint256 indexed listingId, address indexed depositor, uint256 price);
+    event PriceUpdated(
+        uint256 indexed listingId, address indexed depositor, uint256 oldPrice, uint256 newPrice, uint256 newWeight
+    );
+    event InventoryChanged(uint256 indexed version, uint64 changedAt);
+    event AcquisitionRequested(
+        uint256 indexed requestId, address indexed purchaser, uint256 acquisitionFee, uint256 totalWeight
+    );
+    event AcquisitionSequenced(
+        uint256 indexed requestId, uint64 indexed sequence, uint64 wordDeadlineBlock, uint256 reservedCount
+    );
+    event RandomnessTimedOut(
+        uint256 indexed requestId, uint64 indexed sequence, uint64 wordDeadlineBlock, uint256 callbackBlock
+    );
+    event AcquisitionProcessed(
+        uint256 indexed requestId, uint64 indexed sequence, AcquisitionStatus status, address indexed processor
+    );
+    event AcquisitionRefundWithdrawn(address indexed purchaser, uint256 amount);
+    event AcquisitionExpired(uint256 indexed requestId, uint64 indexed sequence, address indexed purchaser, uint256 refund);
+    event AcquisitionRefundedNoListing(uint256 indexed requestId, address indexed purchaser, uint256 refund);
+    event AcquisitionRefundedSlippage(
+        uint256 indexed requestId, address indexed purchaser, uint256 refund, uint256 escrowedFee, uint256 liveFee
+    );
+    event NFTAllocated(
+        uint256 indexed requestId,
+        uint256 indexed listingId,
+        address indexed purchaser,
+        address depositor,
+        uint256 price,
+        uint256 randomWord
+    );
+    event NFTDeliveryFailed(uint256 indexed listingId, address indexed recipient, address collection, uint256 tokenId);
+    event NFTDeliveryCompleted(uint256 indexed listingId, uint256 indexed requestId, address indexed purchaser);
+    event NFTDeliveryRefunded(
+        uint256 indexed listingId, uint256 indexed requestId, address indexed purchaser, uint256 amount
+    );
+    event RefundedNFTRecovered(uint256 indexed listingId, address indexed owner);
+
     // owner inventory
     function listNFTs(ListingInput[] calldata items) external returns (uint256[] memory listingIds);
     function withdrawListing(uint256 listingId) external;
@@ -130,6 +178,17 @@ interface IFWAClone {
     function MAX_INVENTORY_BATCH() external view returns (uint256);
     function DELIVERY_WINDOW() external view returns (uint256);
     function acquisitionRefundCredit(address purchaser) external view returns (uint256);
+    function acquisitionMeta(uint256 requestId)
+        external
+        view
+        returns (
+            uint64 sequence,
+            uint64 wordDeadlineBlock,
+            uint64 rewardEpoch,
+            uint16 maxPositiveSlippageBps,
+            uint16 maxNegativeSlippageBps,
+            uint256 randomWord
+        );
     function pendingDeliveries(uint256 listingId) external view returns (uint256 requestId, uint64 deadline);
 }
 
@@ -143,5 +202,9 @@ interface IPurchaseOperator {
 interface IFWAVRFService {
     function requestFee() external view returns (uint256);
     function rawFulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) external;
+    /// @dev Permissionless retry when a stored word's delivery to the pool ran out of gas.
+    function deliverRandomness(uint256 requestId) external returns (bool delivered);
+    /// @dev 0 None, 1 CoordinatorOutstanding, 2 WordStored, 3 EmptyWordArrayStored, 4 Delivered, 5 CallbackLost.
+    function requestStatus(uint256 requestId) external view returns (uint8);
     function maxOutstandingRequestsPerPool() external view returns (uint256);
 }

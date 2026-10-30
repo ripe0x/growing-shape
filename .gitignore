@@ -13,4 +13,7 @@ __pycache__/
 *.pyc
 .DS_Store
 sim/out/
-deployments/anvil*.json
+deployments/31337.json
+anvil.log
+dev-vrf.log
+keeper.log

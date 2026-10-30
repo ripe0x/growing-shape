@@ -1,0 +1,14 @@
+{
+  "name": "growing-shape-keeper",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "keeper": "node keeper.mjs",
+    "dev-vrf": "node dev-vrf.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "viem": "2.57.7"
+  }
+}

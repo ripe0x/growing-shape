@@ -1,0 +1,34 @@
+{
+  "1": {
+    "verifiedAtBlock": 26305681,
+    "verifiedOn": "2026-10-30",
+    "shapes": "0x6fe9193276bf7abcbee44ab7afd717d637d6faf0",
+    "drawPacks": "0xf21514b090da7df4390803497d6ae673801e5ca7",
+    "fwaFactory": "0xf5a3a153164791ab579c3d9ba5dbecf7cdfd300c",
+    "fwaCloneImplementation": "0xeaa4d032908a9734a2c7939c0d211c35ad51eb31",
+    "fwaVrfService": "0xa4adfc35db18326efb3b5d9bf66a8103ec2d5ee2",
+    "chainlinkVrfCoordinator": "0xd7f86b4b8cae7d942340ff628f82735b7a20893a",
+    "fwaToken": "0xa0df17b5ac76ababa36e1450e2cbcd18a620c845",
+    "codehash": {
+      "fwaFactory": "0x7defffa3d081aef4ac1739a0dde22f38f191e89c6db225d9589b54c07cd29c3d",
+      "fwaCloneImplementation": "0x84dee03dd3af8ee9fb96df379991b881988526db09cb7e294c136fedf9a011c5"
+    },
+    "liveReads": {
+      "poolCreationEnabled": true,
+      "betaAccess": false,
+      "poolCreationFeeFwa": "50000000000000000000000",
+      "maxPoolsPerWallet": 1,
+      "edgeBps": 500,
+      "inventoryChangeCooldown": 0,
+      "maxAcquisitionsPerTx": 5,
+      "maxOutstandingRequestsPerPool": 10,
+      "selectionSlippageBps": 1000,
+      "selectionTimeoutBlocks": 30,
+      "maxActivationsPerAcquisition": 6,
+      "vrfServiceGasEstimate": 1500000,
+      "vrfServiceMarginBps": 3000,
+      "shapesMintFee": "1000000000000000",
+      "drawPacksMinPackValue": "30000000000000000"
+    }
+  }
+}
