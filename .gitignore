@@ -1,0 +1,16 @@
+out/
+cache/
+broadcast/
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+keystore/
+__pycache__/
+*.pyc
+.DS_Store
+sim/out/
+deployments/anvil*.json
