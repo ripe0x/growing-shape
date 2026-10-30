@@ -49,6 +49,59 @@ interface IFWAClone {
         uint256 price;
     }
 
+    // Custom errors (verbatim from the verified clone source), so clients can decode reverts.
+    error ZeroPrice();
+    error PriceTooHigh();
+    error InvalidCollection();
+    error ListingNotActive();
+    error NotDepositor();
+    error NoActiveListings();
+    error WithdrawLocked();
+    error InvalidTreeResult();
+    error ActiveListingCapacityReached();
+    error StagingQueueFull();
+    error NFTTransferFailed();
+    error InsufficientPayment();
+    error AcquisitionFeeTooHigh();
+    error InvalidAcquisitionCount();
+    error InvalidInventoryBatch();
+    error PoolValueTooLow();
+    error InvalidConfig();
+    error NoProceeds();
+    error DeliveryNotPending();
+    error DeliveryNotRefunded();
+    error DeliveryWindowNotElapsed();
+    error DeliveryWindowElapsed();
+    error NotPurchaser();
+    error OnlySelf();
+    error NFTAlreadyControlled();
+    error StaleNFTController();
+    error AcquisitionsNotEnabled();
+    error NoProtocolFees();
+    error OnlyCoordinator();
+    error SequenceInvariantBroken();
+    error NoAcquisitionRefund();
+    error AcquisitionStateLocked();
+    error OnlyVrfService();
+    error VrfRequestsPending();
+    error DuplicateRequestId();
+    error OnlyFactory();
+    error OwnerOnlyInventory();
+    error FactoryPurchasesDisabled();
+    error FactoryWithdrawOnly();
+    error VrfRequestsPaused();
+    error ConsumerNotReady();
+    error FactoryManagedConfig();
+    error InventoryVersionMismatch(uint256 expected, uint256 actual);
+    error InventoryChangeCooldownActive(uint256 purchasesResumeAt);
+    error TransactionExpired(uint256 deadline);
+    error OwnershipLocked();
+    error PoolAlreadyRetired();
+    error InvalidPurchaseOperator();
+    error PurchaseNotAllowed();
+    error PurchaseOperatorCheckFailed();
+    error Unauthorized();
+
     // Events the keeper and web app read (verbatim from the verified clone source).
     event NFTListed(
         uint256 indexed listingId,

@@ -19,6 +19,7 @@ const MAX_GAS_PRICE = parseGwei(env.MAX_GAS_PRICE_GWEI ?? '50');
 const ALTRUISTIC = env.KEEPER_ALTRUISTIC === '1';
 const DRY_RUN = env.DRY_RUN === '1';
 const BOOK_BATCH = BigInt(env.BOOK_BATCH ?? 50);
+const LOOKBACK = BigInt(env.LOOKBACK_BLOCKS ?? 50_400); // ~7 days, FWA's delivery retry window
 
 const pub = createPublicClient({ transport: http(RPC) });
 const chainId = await pub.getChainId();
@@ -61,9 +62,21 @@ async function readState() {
       storedUndelivered.push(id);
     }
   }
+  // Selected prizes whose delivery failed (for example under a gas-starved processor call) and are still
+  // retryable. Anyone may retry within FWA's 7-day window; this completes the player's delivery.
+  const failedDeliveries = [];
+  const head2 = await pub.getBlockNumber();
+  const fromBlock = head2 > LOOKBACK ? head2 - LOOKBACK : 0n;
+  const failed = await pub.getContractEvents({ address: pool, abi: poolAbi, eventName: 'NFTDeliveryFailed', fromBlock, toBlock: head2 });
+  for (const log of failed) {
+    const listingId = log.args.listingId;
+    const [, , , , , , , status] = await p('listings', [listingId]);
+    const [, deadline] = await p('pendingDeliveries', [listingId]);
+    if (status === 6 && BigInt(block.timestamp) < deadline && !failedDeliveries.includes(listingId)) failedDeliveries.push(listingId);
+  }
   const [, , , , backing, notional, , , floor] = featured;
   return {
-    pool, storedUndelivered, head, block: block.number, baseFee: block.baseFeePerGas ?? 0n, now: block.timestamp,
+    pool, storedUndelivered, failedDeliveries, head, block: block.number, baseFee: block.baseFeePerGas ?? 0n, now: block.timestamp,
     processed: next - 1n, booked, unsettled, ownerProceeds, bookBatch: BOOK_BATCH, retired: retiredAt !== 0n,
     replacementDue, operating, cheapestTierCost, seedCost: [0n, 0n, 10n ** 17n, 5n * 10n ** 17n, 10n ** 18n][params[8]] + fee,
     compositionDue, repriceStepBps: params[4], keeperBudget, lastFlatRewardAt: lastFlat,
@@ -83,12 +96,15 @@ async function tick() {
     return false;
   }
   for (const job of jobs) {
-    const [address, abi] = job.target === 'game' ? [GAME, gameAbi] : [ADDR.vrfService, serviceAbi];
+    const [address, abi] =
+      job.target === 'game' ? [GAME, gameAbi] : job.target === 'pool' ? [s.pool, poolAbi] : [ADDR.vrfService, serviceAbi];
     let request;
     let gas;
     try {
-      ({ request } = await pub.simulateContract({ address, abi, functionName: job.fn, args: job.args, account: sender ?? GAME }));
-      gas = await pub.estimateContractGas({ address, abi, functionName: job.fn, args: job.args, account: sender ?? GAME });
+      gas = job.gas ?? (await pub.estimateContractGas({ address, abi, functionName: job.fn, args: job.args, account: sender ?? GAME }));
+      let result;
+      ({ request, result } = await pub.simulateContract({ address, abi, functionName: job.fn, args: job.args, account: sender ?? GAME, gas: job.gas }));
+      if (job.expect !== undefined && result !== job.expect) throw new Error(`returned ${result}`);
     } catch (e) {
       console.log(`${job.name}: simulation failed (${e.shortMessage ?? e.message}); skipped`);
       continue;
@@ -111,7 +127,9 @@ async function tick() {
       console.log(`[dry] ${job.name} gas ${gas} cost ${formatEther(cost)} reward ${formatEther(reward)}`);
       continue;
     }
-    const hash = await wallet.writeContract({ ...request, chain: null, gas: (gas * 12n) / 10n });
+    // A generous limit costs nothing extra (reimbursement and fees use gas actually used) and keeps FWA's
+    // bounded inner calls (settlement delivery, fast path) from being starved by a tight estimate.
+    const hash = await wallet.writeContract({ ...request, chain: null, gas: job.gas ?? gas * 2n + 500_000n });
     const receipt = await pub.waitForTransactionReceipt({ hash });
     console.log(`${job.name}: ${receipt.status} gas ${receipt.gasUsed} tx ${hash}`);
     // Later jobs depend on fresh state (compose after book, decay after replenish): re-plan.

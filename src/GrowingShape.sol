@@ -345,7 +345,10 @@ contract GrowingShape is ReentrancyGuardTransient, IPurchaseOperator {
         if (_tiers.length >= MAX_TIERS || _boardTarget() + t.target > MAX_BOARD) revert BadTier();
         if (t.packShapes == 0) {
             if (_denomIndex(t.backing) > 2) revert BadTier(); // ordinary Shapes are 0.01, 0.05 or 0.1
-        } else if (t.packShapes > 20 || uint256(t.backing) != uint256(t.packShapes) * 0.01 ether) {
+        } else if (
+            t.packShapes > 20 || uint256(t.backing) != uint256(t.packShapes) * 0.01 ether
+                || t.backing < PACKS.MIN_PACK_VALUE()
+        ) {
             revert BadTier();
         }
         _tiers.push(Tier(t.backing, t.packShapes, t.target, 0, 0));
@@ -566,7 +569,8 @@ contract GrowingShape is ReentrancyGuardTransient, IPurchaseOperator {
         } else {
             _allocateGrowth();
         }
-        uint256 amount = operating() - keeperBudget;
+        uint256 op = operating();
+        uint256 amount = op > keeperBudget ? op - keeperBudget : 0;
         if (amount != 0) SafeTransferLib.forceSafeTransferETH(RESIDUAL_RECIPIENT, amount);
         emit Finalized(amount);
     }
@@ -807,10 +811,14 @@ contract GrowingShape is ReentrancyGuardTransient, IPurchaseOperator {
         f.draws = 0;
     }
 
+    /// @dev While a request is unsettled FWA stages new listings; the featured Shape then joins the draw
+    ///      through later requests' reserved batches. When idle, drain the staging queue so it is drawable now.
     function _listFeatured(uint256 tokenId, uint256 notional) internal returns (uint256 listingId) {
         IFWAClone.ListingInput[] memory items = new IFWAClone.ListingInput[](1);
         items[0] = IFWAClone.ListingInput(address(SHAPES), tokenId, notional);
-        listingId = pool.listNFTs(items)[0];
+        IFWAClone p = pool;
+        listingId = p.listNFTs(items)[0];
+        if (p.unsettledAcquisitionCount() == 0) p.activateListings(MAX_BATCH + 1);
         prizes[listingId] = Prize(0, true, true, 0, uint128(WEIGHT_NUMERATOR / notional));
     }
 

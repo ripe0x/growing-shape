@@ -139,6 +139,8 @@ contract AdversarialForkTest is GameBase {
         vm.expectRevert(GrowingShape.BadTier.selector);
         game.addTier(GrowingShape.TierInput(0.05 ether, 4, 1)); // pack backing must be packShapes * 0.01
         vm.expectRevert(GrowingShape.BadTier.selector);
+        game.addTier(GrowingShape.TierInput(0.02 ether, 2, 1)); // below the deployed Draw Packs minimum
+        vm.expectRevert(GrowingShape.BadTier.selector);
         game.setTierTarget(0, 200); // board above 240
         vm.stopPrank();
     }

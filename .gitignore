@@ -21,3 +21,4 @@ anvil-*.log
 deployments/rehearsal*.json
 rehearsal/
 rehearsal-run.log
+.claude/

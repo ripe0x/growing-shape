@@ -10,7 +10,14 @@ const BPS = 10_000n;
  */
 export function dueJobs(s) {
   const jobs = [];
-  for (const id of s.storedUndelivered) jobs.push({ name: 'deliverRandomness', target: 'service', fn: 'deliverRandomness', args: [id] });
+  // FWA wraps VRF delivery and NFT delivery in bounded inner calls that skip silently when gas is short,
+  // so these jobs carry fixed generous gas limits instead of estimates.
+  for (const id of s.storedUndelivered) {
+    jobs.push({ name: 'deliverRandomness', target: 'service', fn: 'deliverRandomness', args: [id], gas: 2_500_000n, expect: true });
+  }
+  for (const listingId of s.failedDeliveries ?? []) {
+    jobs.push({ name: 'retryNFTDelivery', target: 'pool', fn: 'retryNFTDelivery', args: [listingId], gas: 1_000_000n });
+  }
 
   const headProcessable =
     s.head !== null &&

@@ -1276,5 +1276,283 @@
       }
     ],
     "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "AcquisitionFeeTooHigh",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "AcquisitionStateLocked",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "AcquisitionsNotEnabled",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ActiveListingCapacityReached",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ConsumerNotReady",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeliveryNotPending",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeliveryNotRefunded",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeliveryWindowElapsed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeliveryWindowNotElapsed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DuplicateRequestId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FactoryManagedConfig",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FactoryPurchasesDisabled",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FactoryWithdrawOnly",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientPayment",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidAcquisitionCount",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidCollection",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidConfig",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInventoryBatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidPurchaseOperator",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidTreeResult",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InventoryChangeCooldownActive",
+    "inputs": [
+      {
+        "name": "purchasesResumeAt",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InventoryVersionMismatch",
+    "inputs": [
+      {
+        "name": "expected",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "actual",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ListingNotActive",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NFTAlreadyControlled",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NFTTransferFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoAcquisitionRefund",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoActiveListings",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoProceeds",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoProtocolFees",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDepositor",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotPurchaser",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OnlyCoordinator",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OnlyFactory",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OnlySelf",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OnlyVrfService",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OwnerOnlyInventory",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OwnershipLocked",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PoolAlreadyRetired",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PoolValueTooLow",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PriceTooHigh",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PurchaseNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PurchaseOperatorCheckFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SequenceInvariantBroken",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "StagingQueueFull",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "StaleNFTController",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TransactionExpired",
+    "inputs": [
+      {
+        "name": "deadline",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "Unauthorized",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "VrfRequestsPaused",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "VrfRequestsPending",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "WithdrawLocked",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ZeroPrice",
+    "inputs": []
   }
 ]
