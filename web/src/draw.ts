@@ -82,10 +82,10 @@ export async function sendDraw(
       account: purchaser,
       address: pool, abi: poolAbi, functionName: "acquireBatch", args: [...args],
       value: quote.total,
-      // Local unlocked accounts: pin a cheap legacy gas price matching the quote
-      // so tx.gasprice <= what we quoted VRF at. Injected wallets choose their own
-      // fees; the 2x quote headroom covers them.
-      ...(isLocal ? { gasPrice: quote.gasPriceSend } : {}),
+      // FWA charges VRF at tx.gasprice, and we paid for it at gpQuote. Cap the fee at gpQuote so the
+      // transaction can never pay a higher gas price than the VRF portion covers (InsufficientPayment).
+      // Local unlocked accounts use a legacy gas price at the current level.
+      ...(isLocal ? { gasPrice: quote.gasPriceSend } : { maxFeePerGas: quote.gpQuote }),
     });
   } catch (err) {
     throw translateError(err);
