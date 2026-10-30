@@ -264,6 +264,7 @@ reserve.
 >    (economic).** Mitigation: raise the `perDraw` bound in `_setKeeperParams` (contract change;
 >    surplus covers gas to ~4.3 gwei), or accept that the game idles through gas spikes. This is
 >    the single most important open item. See §6 and the final report.
+>    **Applied (`766616a`):** the bound is now 0.005 ETH; the opening value stays 0.001 ETH.
 > 2. **All-in price is at, not below, the 0.02 target**, and rises steeply with gas (0.046 at
 >    10 gwei). The game is only attractively priced at sub-1-gwei gas.
 > 3. **Launch reserve is thin (0.08 ETH headroom).** A cluster of expensive (0.1 ETH) early wins
@@ -288,6 +289,7 @@ reserve.
 >    Suggested fix: raise the `perDraw` bound (e.g. to 0.005 ETH) so reimbursement can track gas
 >    out to the point where surplus itself runs out. This is a single comparison-constant change in
 >    `_setKeeperParams` with negligible bytecode impact (runtime is 23,682 B of the 24,576 B limit).
+>    **Applied in `766616a`.**
 > 2. **Replenishment cost is the binding constraint, and it scales with the cheapest tier.**
 >    Because 0.01 Shapes carry the most selection weight (78% of wins) yet cost the same 426k gas
 >    to re-mint as any Shape, the board "churns" ~332k gas/draw just recycling 0.011 ETH prizes.

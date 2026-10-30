@@ -1,37 +1,49 @@
 # Status
 
-Updated 2026-10-30. Exploration-to-verified-slice stage. Not deployed. Not audited.
+Updated 2026-10-30. **Audit-ready candidate, not deployed, not independently audited.** Candidate
+revision for the contract: `a9f874e` (`src/` unchanged since `dcb9ce6`).
 
-## Verified (pinned mainnet fork, block 26,305,681, real Shapes, Draw Packs and FWA)
+## Verified
+
+Frozen-candidate run (`CANDIDATE_RUN=1 forge test`, revision `a9f874e`, pinned mainnet fork block
+26,305,681, real Shapes, Draw Packs and FWA): **53 tests passed, 0 failed** across 9 suites.
 
 | Suite | Tests | Covers |
 | --- | ---: | --- |
 | `test/fork/Primitives.t.sol` | 10 | FWA pool creation and permanent ownership, settlement and proceeds split, withdraw/compose/relist 0.5→1→5, locks while pending, expiry refunds, inventory version, purchase operator, pack minimum |
-| `test/fork/Lifecycle.t.sol` | 11 | Launch, booking, decay publishing, first composition, featured win and restart, purchase gate (composition due, booking lag, blocked purchasers), pack delivery, ladder parity |
-| `test/fork/Growth.t.sol` | 6 | 0.5→1→5 then win and redeem 5 ETH, three cycles, notional monotonic between compositions, failed delivery booked and recovered, underfunded restart, retirement |
-| `test/fork/Adversarial.t.sol` | 12 | Owner-only guards, every parameter bound, owner extraction attempts, keeper reward caps and reentrancy, stray ETH/NFT rejection, compose refused while a win is unbooked, growth pause |
+| `test/fork/Lifecycle.t.sol` | 11 | Launch, booking, decay publishing, first composition, featured win and restart, purchase gate, pack delivery, ladder parity |
+| `test/fork/Growth.t.sol` | 6 | 0.5→1→5 then win and redeem 5 ETH, three cycles, notional monotonic, failed delivery booked then recovered, underfunded restart, retirement |
+| `test/fork/Adversarial.t.sol` | 12 | Owner-only guards, every bound, owner extraction attempts, keeper reward caps and reentrancy, stray ETH/NFT, compose refused while a win is unbooked, growth pause |
+| `test/fork/External.t.sol` | 4 | Slippage refund books nothing, 300 s cooldown, withdraw-only makes composition wait, purchases disabled |
 | `test/fork/Gas.t.sol` | 1 | Gas for every player and keeper operation |
-| `keeper/test` | 6 | Keeper job planning and reward estimate |
+| `test/invariant/GameInvariants.t.sol` | 1 (3 invariants) | 64 runs × 64 calls = 4,096 random calls, 0 reverts: accounting identity, featured custody/price, counters, live-prize ↔ pool bijection |
+| `test/review/fwa/Integration.t.sol` | 4 | Reviewer reproductions (FWA integration) |
+| `test/review/custody/Custody.t.sol` | 4 | Reviewer reproductions (custody and accounting) |
 
-Each fork suite asserts the exact accounting identity. Runtime size 23,682 B (limit 24,576 B).
-Local fork: `script/local.sh` deploys, launches and passes postflight; dev VRF fulfiller and keeper
-bot booked and replenished live.
+Also: `keeper/test` 6 passed; `sim/test_model.py` all checks pass; `web` builds (`npm run build`).
+Runtime size 24,038 B (EIP-170 margin 538 B).
 
-## In progress
+Fork rehearsal (`script/rehearse.sh`, production parameters, real keeper in profit-seeking mode, dev
+VRF, player bot): see [REPORT.md](REPORT.md#rehearsal). It found and drove three keeper fixes
+(gas-starved FWA inner calls, unbounded log scans, `book` starving `replenish`).
 
-- Economic simulation (`sim/`, ECONOMICS.md): parameter selection. `script/Params.sol` holds provisional
-  values (markup 1.10, decay 377 ppm, floor 10%, reset 70%, capital 4.2 ETH).
-- Frontend (`web/`).
+## Not verified / limits
 
-## Open
+- No independent audit; two internal review agents only (AUDIT_SCOPE R1–R7).
+- Web: injected-wallet (EIP-6963) path not run with a real extension; failed-delivery UI not driven
+  live; WalletConnect not included.
+- Sepolia: FWA's documented Sepolia stack differs from mainnet, so no testnet rehearsal.
+- Simulation assumptions (prompt booking, no refunds) listed in ECONOMICS §2.
 
-- Phase 6: independent review agents, stateful invariant fuzzing on the fork, static analysis.
-- Phase 7: full fork rehearsal of several growth and win cycles through the scripts and keeper.
-- Keeper sizing at realistic gas (budget per draw likely too low at ≥ 1 gwei; pending simulation).
-- Owner decisions (launch-blocking): `RESIDUAL_RECIPIENT`; acquiring 50,000 FWA for pool creation;
-  leftover growth at final retirement.
+## Owner decisions (launch-blocking)
+
+1. `RESIDUAL_RECIPIENT` (immutable; D2, R1).
+2. Acquire 50,000 FWA for pool creation (D17).
+3. Leftover growth fund after the final featured win at retirement (D12).
+4. Accept draw price ≈ 0.0205 ETH all-in at 0.3 gwei with markup 110%, or lower markup to ~107.5%
+   (ECONOMICS §3).
 
 ## Next action
 
-Apply the simulation's recommended parameters to `script/Params.sol`, re-run the affected fork suites,
-then start Phase 6 reviews.
+Owner review of the decisions above, then commission an independent audit of `src/GrowingShape.sol` at
+the candidate revision using docs/AUDIT_SCOPE.md.
