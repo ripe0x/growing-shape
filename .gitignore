@@ -22,3 +22,5 @@ deployments/rehearsal*.json
 rehearsal/
 rehearsal-run.log
 .claude/
+candidate-rev.txt
+candidate-forge.log

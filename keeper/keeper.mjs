@@ -90,15 +90,19 @@ async function readState() {
   };
 }
 
-/** Sends at most one job, the highest-priority one that simulates and pays; returns whether it sent. */
-async function tick() {
+/**
+ * Sends at most one job: the highest-priority one not already sent this round that simulates and pays.
+ * Returns its name, or null. Skipping names already sent stops a job that is due on every re-plan
+ * (`book`, under steady play) from starving the rest (`replenish`).
+ */
+async function tick(sent) {
   const s = await readState();
   const gasPrice = await pub.getGasPrice();
-  const jobs = dueJobs(s);
-  if (jobs.length === 0) return false;
+  const jobs = dueJobs(s).filter((j) => !sent.has(j.name + (j.args[0] ?? '')));
+  if (jobs.length === 0) return null;
   if (gasPrice > MAX_GAS_PRICE) {
     console.log(`gas ${formatGwei(gasPrice)} gwei above cap; ${jobs.length} job(s) deferred`);
-    return false;
+    return null;
   }
   for (const job of jobs) {
     const [address, abi] =
@@ -138,15 +142,20 @@ async function tick() {
     const receipt = await pub.waitForTransactionReceipt({ hash });
     console.log(`${job.name}: ${receipt.status} gas ${receipt.gasUsed} tx ${hash}`);
     // Later jobs depend on fresh state (compose after book, decay after replenish): re-plan.
-    return receipt.status === 'success';
+    return receipt.status === 'success' ? job.name + (job.args[0] ?? '') : null;
   }
-  return false;
+  return null;
 }
 
 console.log(`keeper for ${GAME} on chain ${chainId}${DRY_RUN ? ' (dry run)' : ''} as ${sender ?? 'nobody'}`);
 for (;;) {
   try {
-    for (let i = 0; i < 10 && (await tick()); i++);
+    const sent = new Set();
+    for (let i = 0; i < 12; i++) {
+      const name = await tick(sent);
+      if (!name) break;
+      sent.add(name);
+    }
   } catch (e) {
     console.error('tick failed:', e.shortMessage ?? e.message);
   }

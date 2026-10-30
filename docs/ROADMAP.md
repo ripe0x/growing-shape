@@ -20,24 +20,27 @@ Acceptance: start, decay from delivered draws, stepped publishing only when idle
 atomic composition with partial reset, win records and restart, underfunded restart with ordinary play.
 Evidence: `test/fork/Lifecycle.t.sol`, `test/fork/Growth.t.sol`.
 
-## Phase 3. Economic simulation (in progress)
+## Phase 3. Economic simulation (done)
 Acceptance: reproducible Monte Carlo of the exact contract rules across the brief's §13 dimensions;
 selected parameters in `script/Params.sol` with evidence in ECONOMICS.md; clear statement where growth
-is not supportable.
+is not supportable. Evidence: `sim/`, docs/ECONOMICS.md (keeper allowance raised to 0.001 ETH per draw;
+the game is sustainable below ~2 gwei).
 
-## Phase 4. Permissionless operations and keeper (done, sizing pending Phase 3)
+## Phase 4. Permissionless operations and keeper (done)
 Acceptance: every maintenance step permissionless and bounded; rewards only for work, capped by gas
 price, interval and allowance; keeper bot plans, simulates and sends; outage pauses purchases without
 touching player rights; local VRF fulfiller for the fork. Evidence: `test/fork/Adversarial.t.sol`,
 `keeper/test`, local fork runs.
 
-## Phase 5. Frontend (in progress)
+## Phase 5. Frontend (done; injected-wallet path not exercised with a real extension)
 Acceptance: mobile-first app against the real contracts on the fork: live featured art and odds, quote
-and draw 1–5 with full cost, pending → delivered, refunds and failed deliveries, verified cycle history.
+and draw 1–5 with full cost, pending → delivered, refunds and failed deliveries, verified cycle history. Evidence: `web/`, browser checks on the fork (mobile and
+desktop, light and dark).
 
-## Phase 6. Security review and hardening (open)
+## Phase 6. Security review and hardening (done for internal review)
 Acceptance: independent internal review agents on custody, accounting, FWA integration and economics;
-stateful invariant fuzzing on the fork; static analysis; findings fixed and retested.
+stateful invariant fuzzing on the fork; static analysis; findings fixed and retested. Evidence:
+AUDIT_SCOPE findings R1–R7, `test/review/`, `test/invariant/`.
 
 ## Phase 7. Deployment preparation and rehearsal (in progress)
 Acceptance: `Deploy`, `Launch`, `Postflight` scripts with dependency checks; values-only configuration;
