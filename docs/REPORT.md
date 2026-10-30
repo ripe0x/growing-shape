@@ -68,7 +68,7 @@ booking cannot starve replenishment.
 `script/rehearse.sh`: production parameters on a chain-31337 mainnet fork; Deploy → Launch → Postflight →
 unpause through the real scripts, then the keeper (profit-seeking), the dev VRF fulfiller and a player bot.
 
-Results are recorded in [§7.1](#71-results). The run used one-block VRF latency, which is far faster than
+The run used one-block VRF latency, which is far faster than
 mainnet (FWA's 10-request cap and ~36 s VRF latency bound play to ~0.25 draws/s per pool), so it doubles
 as a stress test. It surfaced three keeper defects, all fixed: gas-starved FWA inner calls, unbounded log
 scans on a fork, and `book` starving `replenish`. Under the starvation bug the board sank to the
@@ -77,8 +77,24 @@ mode.
 
 ### 7.1 Results
 
-Pending at the time of writing; see the final message of the implementation session and
-`rehearsal/report.json` when re-run.
+Run on 2026-10-30 at game `0xa8A3…6115` (fork of block 26,305,681), production `Params`, no manual
+correction of game state. Stopped after the first full cycle and the second cycle's first composition.
+
+| Measure | Result |
+| --- | --- |
+| Draws settled and booked | 2,394 processed, 2,224 delivered (rest expired or refunded) |
+| Cycle 1 | Shape #512 composed 0.5→1 ETH, decayed from 0.779 to ~0.44 ETH notional, won after 2,150 draws |
+| Cycle 2 | Started automatically by the keeper; carried-over growth composed it 0.5→1 ETH immediately |
+| Keeper transactions | 218 `book`, 134 `replenish`, 17 `publishDecay`, 2 `compose`, 1 `startCycle`; none reverted |
+| Ledger | revenue 45.14 ETH, prize cost 39.93, keeper 1.38 (at anvil's 1 gwei), growth allocated 3.69, featured awarded 1.002 |
+| Accounting identity | exact to the wei (7,026,284,187,957,893,625 both sides) |
+| Board at stop | 99 / 99 live |
+| Web app | Draw 1 through the UI settled and showed DELIVERED with art; history shows the cycle-1 win |
+
+Per-draw economics matched the simulation (≈0.0203 ETH proceeds vs ≈0.0180 prize cost). Keeper cost
+per draw (~620k gas at 1 gwei) matched the simulation's ~541k-gas estimate plus booking overhead. Note
+the carry-over effect: growth funded during a cycle that ends before composing moves the next featured
+Shape up immediately (FUNCTIONAL_SPEC §5: leftover growth carries over), so a fresh cycle can open at 1 ETH. This keeps player-funded surplus in the jackpot; an owner who prefers every cycle to open at 0.5 ETH would need a rule change.
 
 ## 8. Owner decisions and launch blockers
 

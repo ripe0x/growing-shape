@@ -42,11 +42,11 @@ Acceptance: independent internal review agents on custody, accounting, FWA integ
 stateful invariant fuzzing on the fork; static analysis; findings fixed and retested. Evidence:
 AUDIT_SCOPE findings R1–R7, `test/review/`, `test/invariant/`.
 
-## Phase 7. Deployment preparation and rehearsal (in progress)
+## Phase 7. Deployment preparation and rehearsal (done; one full cycle rehearsed)
 Acceptance: `Deploy`, `Launch`, `Postflight` scripts with dependency checks; values-only configuration;
 a full fork rehearsal through launch, several compositions and wins with no manual correction; operator
-runbook. Evidence so far: `script/local.sh` launches and passes postflight on the fork.
+runbook. Evidence: `script/rehearse.sh` run (REPORT §7.1), DEPLOY.md, `script/local.sh`.
 
-## Phase 8. Audit package and final report (open)
+## Phase 8. Audit package and final report (done)
 Acceptance: AUDIT_SCOPE complete; verified results separated from assumptions; owner decisions and
 launch blockers listed.

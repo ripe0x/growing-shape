@@ -22,7 +22,7 @@ export function History({ shapes, entries, loading }: { shapes: Address; entries
                 <div className="thumb" style={{ width: 72, height: 72 }}><Art collection={shapes} tokenId={e.tokenId} alt={`Won Shape #${e.tokenId}`} /></div>
                 <div className="meta">
                   <div className="what">Shape #{e.tokenId.toString()} · {ethUnit(e.backing)}</div>
-                  <div className="sub">{e.compositions} compositions · {e.draws} draws</div>
+                  <div className="sub">{e.compositions} composition{Number(e.compositions) === 1 ? "" : "s"} · {e.draws} draws</div>
                   <div className="req">won by {shortAddr(e.winner)}{" "}
                     {e.txHash && (EXPLORER_TX
                       ? <a className="link" href={`${EXPLORER_TX}${e.txHash}`} target="_blank" rel="noreferrer">tx ↗</a>

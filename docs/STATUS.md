@@ -24,14 +24,20 @@ Also: `keeper/test` 6 passed; `sim/test_model.py` all checks pass; `web` builds 
 Runtime size 24,038 B (EIP-170 margin 538 B).
 
 Fork rehearsal (`script/rehearse.sh`, production parameters, real keeper in profit-seeking mode, dev
-VRF, player bot): see [REPORT.md](REPORT.md#rehearsal). It found and drove three keeper fixes
-(gas-starved FWA inner calls, unbounded log scans, `book` starving `replenish`).
+VRF, player bot): 2,394 draws, one complete cycle (Shape #512 composed to 1 ETH, won after 2,150 draws),
+automatic restart and an immediate composition of cycle 2 from carried growth, 372 keeper transactions
+with none reverted, accounting identity exact to the wei, and a UI draw delivered end to end. Details in
+[REPORT.md](REPORT.md#71-results). It found and drove three keeper fixes (gas-starved FWA inner calls,
+unbounded log scans, `book` starving `replenish`) and two web fixes (tier odds with staged listings,
+revert messaging).
 
 ## Not verified / limits
 
 - No independent audit; two internal review agents only (AUDIT_SCOPE R1–R7).
 - Web: injected-wallet (EIP-6963) path not run with a real extension; failed-delivery UI not driven
   live; WalletConnect not included.
+- Rehearsal completed one cycle, not three: one-block VRF made the run keeper-bound; multiple cycles
+  are covered by `test/fork/Growth.t.sol` on the same real contracts.
 - Sepolia: FWA's documented Sepolia stack differs from mainnet, so no testnet rehearsal.
 - Simulation assumptions (prompt booking, no refunds) listed in ECONOMICS §2.
 
