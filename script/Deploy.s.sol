@@ -41,7 +41,10 @@ contract Deploy is Script {
         json = vm.serializeAddress("d", "owner", owner);
         json = vm.serializeAddress("d", "residualRecipient", residual);
         json = vm.serializeUint("d", "deployBlock", block.number);
-        vm.writeJson(json, string.concat("deployments/", vm.toString(block.chainid), ".json"));
+        string memory path = vm.envOr(
+            "GS_DEPLOYMENT_FILE", string.concat("deployments/", vm.toString(block.chainid), ".json")
+        );
+        vm.writeJson(json, path);
     }
 
     function checkDependencies() public view {

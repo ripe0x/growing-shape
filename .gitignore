@@ -17,3 +17,7 @@ deployments/31337.json
 anvil.log
 dev-vrf.log
 keeper.log
+anvil-*.log
+deployments/rehearsal*.json
+rehearsal/
+rehearsal-run.log
